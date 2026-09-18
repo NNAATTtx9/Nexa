@@ -2,7 +2,7 @@
 
 import { ID, Query } from "node-appwrite";
 import { createAdminClient, createGuestClient } from "../appwrite";
-import { createAuthToken, createBankingModeToken, verifyAuthToken, verifyBankingModeToken } from "../auth-session";
+import { AUTH_COOKIE_NAME, createAuthToken, createBankingModeToken, getAuthCookieOptions, verifyAuthToken, verifyBankingModeToken } from "../auth-session";
 import { cookies } from "next/headers";
 import { encryptId, extractCustomerIdFromUrl, parseStringify } from "../utils";
 import { CountryCode, ProcessorTokenCreateRequest, ProcessorTokenCreateRequestProcessorEnum, Products } from "plaid";
@@ -77,12 +77,7 @@ export const signIn = async (userData: LoginUser): Promise<{ success: boolean; e
             userData.password,
         );
 
-        (await cookies()).set("nexa-session", createAuthToken(session.userId), {
-            path: '/',
-            httpOnly: true,
-            sameSite: 'lax',
-            secure: process.env.NODE_ENV === 'production',
-        });
+        (await cookies()).set(AUTH_COOKIE_NAME, createAuthToken(session.userId), getAuthCookieOptions());
         return { success: true, error: null };
     } catch (error) {
         console.error('Error', error);
@@ -154,12 +149,7 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
         const { account: guestAccount } = await createGuestClient();
         await guestAccount.createEmailPasswordSession(email, password);
 
-        (await cookies()).set("nexa-session", createAuthToken(newUserAccount.$id), {
-            path: '/',
-            httpOnly: true,
-            sameSite: 'lax',
-            secure: process.env.NODE_ENV === 'production',
-        });
+        (await cookies()).set(AUTH_COOKIE_NAME, createAuthToken(newUserAccount.$id), getAuthCookieOptions());
 
         return { user: parseStringify(newUserAccount), error: null };
         } catch (error) {
