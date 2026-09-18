@@ -1,6 +1,25 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
-const getSigningSecret = () => process.env.APP_SESSION_SECRET || process.env.NEXT_APPWRITE_KEY || "development-session-secret";
+export const AUTH_COOKIE_NAME = "nexa-session";
+
+export const getAuthCookieOptions = () => ({
+  path: "/",
+  httpOnly: true,
+  sameSite: "lax" as const,
+  secure: process.env.NODE_ENV === "production",
+  maxAge: 60 * 60 * 24 * 30,
+});
+
+const getSigningSecret = () => {
+  const secret = process.env.APP_SESSION_SECRET;
+  if (secret) return secret;
+
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("APP_SESSION_SECRET is required in production.");
+  }
+
+  return "development-session-secret";
+};
 
 export function createAuthToken(userId: string) {
   const signature = createHmac("sha256", getSigningSecret()).update(userId).digest("hex");
