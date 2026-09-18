@@ -81,6 +81,7 @@ const AuthForm = ({ type }: { type: string }) => {
 
                 if (result.ok && response.success) {
                     router.replace('/root');
+                    router.refresh();
                 } else {
                     setErrorMessage(response.error ?? 'Invalid email or password.');
                 }
@@ -93,7 +94,7 @@ const AuthForm = ({ type }: { type: string }) => {
     return (
         <section className="auth-form">
             <header className="flex flex-col gap-5 md:gap-8">
-                <Link href="/root" className="mb-12 flex cursor-pointer items-center gap-2">
+                <Link href="/root" prefetch={false} className="mb-12 flex cursor-pointer items-center gap-2">
                     <Image
                         src="/icons/logo.svg"
                         width={34}
