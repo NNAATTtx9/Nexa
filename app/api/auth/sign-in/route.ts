@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     const session = await account.createEmailPasswordSession(email, password);
 
     const response = NextResponse.json({ success: true });
-    response.cookies.set("nexa-session", createAuthToken(session.userId), {
+    response.cookies.set("appwrite-session", createAuthToken(session.userId), {
       path: "/",
       httpOnly: true,
       sameSite: "lax",
