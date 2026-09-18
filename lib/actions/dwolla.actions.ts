@@ -17,6 +17,10 @@ const getEnvironment = (): "production" | "sandbox" => {
   }
 };
 
+console.log("DWOLLA_ENV:", process.env.DWOLLA_ENV);
+console.log("DWOLLA_KEY:", process.env.DWOLLA_KEY ? "set" : "missing");
+console.log("DWOLLA_SECRET:", process.env.DWOLLA_SECRET ? "set" : "missing");
+
 const dwollaClient = new Client({
   environment: getEnvironment(),
   key: process.env.DWOLLA_KEY as string,
