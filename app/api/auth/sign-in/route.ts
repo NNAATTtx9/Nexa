@@ -1,15 +1,6 @@
 import { createGuestClient } from "@/lib/appwrite";
 import { createAuthToken } from "@/lib/auth-session";
 import { NextResponse } from "next/server";
-import { Client, Account } from "appwrite";
-
-export const createGuestClient = () => {
-  const client = new Client()
-    .setEndpoint(process.env.APPWRITE_ENDPOINT!) // e.g. https://cloud.appwrite.io/v1
-    .setProject(process.env.APPWRITE_PROJECT_ID!);
-
-  return { account: new Account(client) };
-};
 
 export async function POST(request: Request) {
   try {
@@ -28,6 +19,7 @@ export async function POST(request: Request) {
 
     return response;
   } catch (error) {
+    console.error("Sign-in failed:", error);
     const message = error instanceof Error ? error.message : "Unable to sign in.";
     return NextResponse.json({ success: false, error: message }, { status: 401 });
   }
