@@ -140,6 +140,7 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
                         ...normalizedUserData,
                         country: userData.country.trim().toUpperCase(),
                         regionCode: userData.regionCode.trim().toUpperCase(),
+                    state: normalizedUserData.regionCode,
                     userId: newUserAccount.$id,
                     dwollaCustomerId,
                     dwollaCustomerUrl
