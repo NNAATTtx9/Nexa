@@ -1,5 +1,5 @@
 import { createGuestClient } from "@/lib/appwrite";
-import { createAuthToken } from "@/lib/auth-session";
+import { AUTH_COOKIE_NAME, createAuthToken, getAuthCookieOptions } from "@/lib/auth-session";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -9,18 +9,13 @@ export async function POST(request: Request) {
     const session = await account.createEmailPasswordSession(email, password);
 
     const response = NextResponse.json({ success: true });
-    response.cookies.set("appwrite-session", session.$id, {
-      path: "/",
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 30,
-    });
+    response.cookies.set(AUTH_COOKIE_NAME, createAuthToken(session.userId), getAuthCookieOptions());
 
     return response;
   } catch (error) {
-    console.error("Sign-in failed:", error);
     const message = error instanceof Error ? error.message : "Unable to sign in.";
-    return NextResponse.json({ success: false, error: message }, { status: 401 });
+    console.error("Sign-in failed:", error);
+    const status = message.includes("APP_SESSION_SECRET") ? 500 : 401;
+    return NextResponse.json({ success: false, error: status === 500 ? "Authentication is not configured on the server." : message }, { status });
   }
 }
