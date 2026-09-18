@@ -27,7 +27,7 @@ export async function createSessionClient() {
     throw new Error("No session");
   }
 
-  client.setSession(session.value);
+  client.setJWT(session.value);
 
   return {
     get account() {
